@@ -1,5 +1,11 @@
 spring:
   application:
-    name: service-registry
+    name: classroom-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: ''
+    url: jdbc:mysql://localhost:3306/classroom
+    username: root
+
   config:
     import: "optional:configserver:http://localhost:8088"
