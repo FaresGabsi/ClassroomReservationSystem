@@ -7,14 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("api/v1/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
     private final ReservationService reservationService;
@@ -24,7 +22,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservations);
     }
 
-    @PostMapping("/add")
+    @PostMapping
     public ResponseEntity<String> addReservation(@RequestBody Reservation reservation){
         try {
             Reservation res = reservationService.addReservation(reservation);
