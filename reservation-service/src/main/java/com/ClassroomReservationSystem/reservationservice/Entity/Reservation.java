@@ -1,5 +1,6 @@
 package com.ClassroomReservationSystem.reservationservice.Entity;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -22,7 +23,8 @@ public class Reservation {
     @GeneratedValue
     private Long resId;
     private String classId;
-    // List of seances
+    // List of séances
+    @ElementCollection
     private List<Seance> seances;
     private Date reservationDate;
     //private Long user_id;
