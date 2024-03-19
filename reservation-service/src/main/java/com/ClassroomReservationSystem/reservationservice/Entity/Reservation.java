@@ -1,9 +1,6 @@
 package com.ClassroomReservationSystem.reservationservice.Entity;
 
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +23,7 @@ public class Reservation {
     // List of séances
     @ElementCollection
     private List<Seance> seances;
+    @Temporal(TemporalType.DATE)
     private Date reservationDate;
     //private Long user_id;
 }

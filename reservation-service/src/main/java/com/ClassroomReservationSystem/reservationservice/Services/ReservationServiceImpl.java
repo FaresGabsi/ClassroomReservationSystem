@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ public class ReservationServiceImpl implements ReservationService{
     public Reservation addReservation(Reservation reservation) {
         // Check if reservation is valid
         if(isValid(reservation)){
+
             return reservationRepository.save(reservation);
         }
         else
@@ -49,11 +51,10 @@ public class ReservationServiceImpl implements ReservationService{
             return false;
         }
         List<Reservation> reservations = getAllReservations();
-        //noneMatch returns true if no elements of the stream match the given predicate
-        //anyMatch returns true if any elements of the stream match the given predicate
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return reservations.stream().noneMatch(res->
-                res.getReservationDate().equals(reservation.getReservationDate())&&
-                res.getSeances().stream().anyMatch(seance -> reservation.getSeances().contains(seance)));
+                dateFormat.format(res.getReservationDate()).equals(dateFormat.format(reservation.getReservationDate()))&&
+                        res.getSeances().stream().anyMatch(seance -> reservation.getSeances().contains(seance)));
     }
 
     @Override
