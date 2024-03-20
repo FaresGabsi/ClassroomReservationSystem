@@ -23,38 +23,23 @@ public class ReservationServiceImpl implements ReservationService{
     @Override
     public Reservation addReservation(Reservation reservation) {
         // Check if reservation is valid
-        if(isValid(reservation)){
-
-            return reservationRepository.save(reservation);
-        }
-        else
+        if(!isValidClass(reservation.getClassId()))
+            throw new RuntimeException("Class not found with id: " + reservation.getClassId());
+        if(!isValidDate(reservation))
             throw new RuntimeException("Invalid reservation");
+        return reservationRepository.save(reservation);
     }
 
     // Check if reservation is valid
-    private boolean isValid(Reservation reservation) {
-        /*//check if class exists in classroom service and if the seances are valid and if there are no other reservations for the same class at the same time
-        if(classroomClient.getClassroomById(reservation.getClassId()) != null){
-            //check if there are no other reservations for the same class at the same
-            List<Reservation>reservations=getAllReservations();
-            for(Reservation res:reservations){
-                if (res.getReservationDate().equals(reservation.getReservationDate())) {
-                    if(res.getSeances().contains(reservation.getSeances())){
-                        return false;
-                    }
-                }
-                }
-            }
-        return true;*/
-        // Check if class exists in classroom service
-        if (classroomClient.getClassroomById(reservation.getClassId()) == null) {
-            return false;
-        }
+    private boolean isValidDate(Reservation reservation) {
         List<Reservation> reservations = getAllReservations();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return reservations.stream().noneMatch(res->
                 dateFormat.format(res.getReservationDate()).equals(dateFormat.format(reservation.getReservationDate()))&&
                         res.getSeances().stream().anyMatch(seance -> reservation.getSeances().contains(seance)));
+    }
+    private boolean isValidCgilass(String classId) {
+        return classroomClient.getClassroomById(classId) != null;
     }
 
     @Override
@@ -73,7 +58,12 @@ public class ReservationServiceImpl implements ReservationService{
             res.setClassId(updatedReservation.getClassId());
             res.setReservationDate(updatedReservation.getReservationDate());
             res.setSeances(updatedReservation.getSeances());
-            return reservationRepository.save(res);
+            if(!isValidClass(res.getClassId()))
+                throw new RuntimeException("Class not found with id: " + res.getClassId());
+            if(isValidDate(res))
+                return reservationRepository.save(res);
+            else
+                throw new RuntimeException("Invalid reservation");
         }
         else
             throw new RuntimeException("Reservation not found with id: " + resId);
@@ -82,11 +72,7 @@ public class ReservationServiceImpl implements ReservationService{
 
     @Override
     public Optional<Reservation> getReservation(Long resId) {
-        Optional<Reservation> reservation = reservationRepository.findById(resId);
-        if(reservation.isPresent()){
-            return reservation;
-        }
-        return null;
+        return reservationRepository.findById(resId);
     }
 
     @Override

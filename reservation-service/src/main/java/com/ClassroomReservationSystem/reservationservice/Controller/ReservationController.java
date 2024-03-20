@@ -26,9 +26,27 @@ public class ReservationController {
     public ResponseEntity<String> addReservation(@RequestBody Reservation reservation){
         try {
             Reservation res = reservationService.addReservation(reservation);
-            return ResponseEntity.ok("Reservation added with id: " + res.getResId());
+            return ResponseEntity.status(HttpStatus.CREATED).body("Reservation added with id: " + res.getResId());
         }catch (Exception e){
             return new ResponseEntity<>("Failed to add Reservation: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("/{resId}")
+    public ResponseEntity<String> deleteReservation(@PathVariable("resId") Long resId){
+        try {
+            reservationService.deleteReservation(resId);
+            return ResponseEntity.ok("Reservation deleted with id: " + resId);
+        }catch (Exception e){
+            return new ResponseEntity<>("Failed to delete Reservation: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    @PutMapping("/{resId}")
+    public ResponseEntity<String> updateReservation(@PathVariable("resId") Long resId, @RequestBody Reservation updatedReservation){
+        try {
+            Reservation res = reservationService.updateReservation(resId, updatedReservation);
+            return ResponseEntity.ok("Reservation updated with id: " + res.getResId());
+        }catch (Exception e){
+            return new ResponseEntity<>("Failed to update Reservation: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

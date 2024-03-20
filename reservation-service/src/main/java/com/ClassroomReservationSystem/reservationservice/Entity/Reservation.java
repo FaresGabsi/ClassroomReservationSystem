@@ -25,5 +25,4 @@ public class Reservation {
     private List<Seance> seances;
     @Temporal(TemporalType.DATE)
     private Date reservationDate;
-    //private Long user_id;
 }
