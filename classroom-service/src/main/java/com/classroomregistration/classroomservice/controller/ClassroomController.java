@@ -3,6 +3,7 @@ package com.classroomregistration.classroomservice.controller;
 import com.classroomregistration.classroomservice.entity.Classroom;
 import com.classroomregistration.classroomservice.entity.Equipment;
 import com.classroomregistration.classroomservice.service.ClassroomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/classroom")
+@RequiredArgsConstructor
 public class ClassroomController {
-    @Autowired
-    private ClassroomService classroomService;
+    private final ClassroomService classroomService;
     @GetMapping()
     public List<Classroom> getAllClassrooms() {
         return classroomService.fetchAllClassrooms();

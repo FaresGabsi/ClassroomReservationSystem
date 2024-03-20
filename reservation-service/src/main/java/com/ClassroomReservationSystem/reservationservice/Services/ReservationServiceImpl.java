@@ -38,7 +38,7 @@ public class ReservationServiceImpl implements ReservationService{
                 dateFormat.format(res.getReservationDate()).equals(dateFormat.format(reservation.getReservationDate()))&&
                         res.getSeances().stream().anyMatch(seance -> reservation.getSeances().contains(seance)));
     }
-    private boolean isValidCgilass(String classId) {
+    private boolean isValidClass(String classId) {
         return classroomClient.getClassroomById(classId) != null;
     }
 

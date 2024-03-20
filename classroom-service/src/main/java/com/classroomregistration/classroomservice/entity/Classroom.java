@@ -22,7 +22,6 @@ import java.util.List;
         @Id
         private String classroomId;
         private Long capacity;
-        // List of séances
         @ElementCollection
         private List<Equipment> equipments;
 
