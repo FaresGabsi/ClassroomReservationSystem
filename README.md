@@ -1,57 +1,44 @@
-# # Classroom Reservation System Microservices
+# Classroom Reservation System Microservices
 
-This project implements a microservices-based classroom reservation system using Spring Boot. It offers modularity, scalability, and maintainability compared to a monolithic architecture.
+This project implements a microservices-based classroom reservation system using Spring Boot.
 
-Microservices:
+## Microservices
 
-Classroom Service:
+The system consists of four independent microservices:
 
-Manages classrooms.
-Provides CRUD (Create, Read, Update, Delete) operations on classrooms.
-Exposes endpoints for:
-Creating new classrooms.
-Retrieving existing classrooms (individually or all).
-Updating classroom details.
-Deleting classrooms.
-Reservation Service:
+1. **Classroom Service:**
+   - Manages classrooms.
+   - Provides CRUD (Create, Read, Update, Delete) operations on classrooms.
 
-Handles classroom reservations.
-Provides CRUD operations on reservations.
-Ensures no overlapping reservations for a classroom.
-Exposes endpoints for:
-Booking a classroom for a specific time slot.
-Viewing existing reservations (individually or all).
-Modifying existing reservations (subject to availability).
-Canceling reservations.
-User Service:
+2. **Reservation Service:**
+   - Handles classroom reservations.
+   - Provides CRUD operations on reservations, ensuring no overlaps.
 
-Handles user authentication and authorization.
-Allows user registration and login.
-Issues tokens upon successful login for secure access to other services.
-Implements role-based access control (RBAC) to restrict unauthorized operations (optional, depending on your requirements).
-Exposes endpoints for:
-User registration.
-User login (returns a JWT or similar token).
-Recommendation Service:
+3. **User Service:**
+   - Handles user authentication and authorization.
+   - Allows user registration, login, and token issuance.
+   - Implements role-based access control.
 
-Recommends suitable classrooms based on user needs.
-Consumes data from Classroom Service and Reservation Service.
-Analyzes factors like classroom size, equipment availability, and existing reservations.
-Suggests optimal classrooms based on user requirements.
-(Optional) Offers features to learn user preferences over time and personalize recommendations.
-Exposes endpoints for:
-Fetching classroom recommendations based on specified criteria.
-Technology Stack:
+4. **Recommendation Service:**
+   - Recommends optimal classrooms based on user needs.
+   - Consumes data from Classroom and Reservation services.
 
-Spring Boot
-Spring Cloud (optional, for service discovery and communication)
-JPA or similar for data persistence
-JWT or similar for authentication (consider security best practices)
-Other libraries as needed (e.g., for validation, caching, etc.)
-Getting Started
+## Technology Stack
 
-Clone this repository.
-Install required dependencies (refer to project-specific instructions).
-Configure database connections in application properties files.
-(Optional) Configure security settings in application properties files.
-Run each microservice using its Spring Boot application class.
+- Spring Boot
+- Spring Cloud
+- Lombok
+- JPA
+- Oauth2
+
+## Getting Started
+
+1. Clone this repository.
+2. Install required dependencies (refer to project-specific instructions).
+3. Configure database connections in application properties files.
+4. Configure security settings in application properties files.
+5. Run each microservice using its Spring Boot application class.
+
+## Contributing
+
+We welcome contributions! Please refer to the contribution guidelines (if provided).
