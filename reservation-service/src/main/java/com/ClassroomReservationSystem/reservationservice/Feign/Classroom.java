@@ -6,12 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
 public class Classroom {
     @Id
-    private String id_classroom;
+    private String classroomId;
     private Integer capacity;
+    private List<Equipment> equipments;
 }

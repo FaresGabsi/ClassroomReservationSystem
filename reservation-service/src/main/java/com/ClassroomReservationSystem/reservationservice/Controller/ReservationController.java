@@ -1,6 +1,9 @@
 package com.ClassroomReservationSystem.reservationservice.Controller;
 
 import com.ClassroomReservationSystem.reservationservice.Entity.Reservation;
+import com.ClassroomReservationSystem.reservationservice.Entity.Seance;
+import com.ClassroomReservationSystem.reservationservice.Feign.Classroom;
+import com.ClassroomReservationSystem.reservationservice.Feign.Equipment;
 import com.ClassroomReservationSystem.reservationservice.Services.ReservationService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -21,7 +25,15 @@ public class ReservationController {
         List<Reservation> reservations= reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
     }
+    @GetMapping("/recommendation")
+    public ResponseEntity<List<Classroom>> getRecommendation(
+            @RequestParam(required = false) Long minCapacity,
+            @RequestParam(required = false) List<Equipment> requiredEquipment,
+            @RequestParam(required = false)List<Seance> seances,@RequestParam(required = false) Date date) {
 
+        List<Classroom> recommendation = reservationService.getRecommendation(minCapacity, requiredEquipment, seances,date);
+        return new ResponseEntity<>(recommendation, HttpStatus.OK);
+    }
     @PostMapping
     public ResponseEntity<String> addReservation(@RequestBody Reservation reservation){
         try {
