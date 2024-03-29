@@ -12,10 +12,18 @@ spring:
           uri: lb://classroom-service
           predicates:
             - Path=/classroom/**
+          filters:
+            - AuthenticationFilter
         - id: reservation-service
           uri: lb://reservation-service
           predicates:
             - Path=/api/v1/reservations/**
+          filters:
+            - AuthenticationFilter
+        - id: identity-service
+          uri: lb://identity-service
+          predicates:
+            - Path=/auth/**
 
 management:
   tracing:
