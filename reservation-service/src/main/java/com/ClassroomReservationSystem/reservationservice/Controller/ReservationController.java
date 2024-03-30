@@ -29,11 +29,10 @@ public class ReservationController {
         List<Reservation> reservations= reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
     }
-    @PostMapping(value = "/recommandation", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Classroom>> getRecommandation(
+    @PostMapping( "/recommandation")
+    public ResponseEntity<List<Classroom>> getRecommandation(@RequestBody(required = false) SeanceDateDTO seanceDateDTO,
             @RequestParam(required = false) Long minCapacity,
             @RequestParam(required = false) List<Equipment> requiredEquipment,
-            @RequestBody(required = false) SeanceDateDTO seanceDateDTO,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date reservationDate) {
 
         List<Seance> seances = null;
