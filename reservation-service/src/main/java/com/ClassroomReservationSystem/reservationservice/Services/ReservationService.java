@@ -17,5 +17,5 @@ public interface ReservationService {
     Reservation updateReservation(Long resId, Reservation updatedReservation);
     Optional<Reservation> getReservation(Long resId);
     List<Reservation> getAllReservations();
-    List<Classroom> getRecommendation(Long minCapacity, List<Equipment> requiredEquipment, List<Seance> seances, Date reservationDate);
+    List<Classroom> getRecommandation(Long minCapacity, List<Equipment> requiredEquipment, List<Seance> seances, String date);
 }

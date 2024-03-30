@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -82,24 +83,45 @@ public class ReservationServiceImpl implements ReservationService{
     }
 
     @Override
-    public List<Classroom> getRecommendation(Long minCapacity, List<Equipment> requiredEquipment, List<Seance> seances, Date reservationDate) {
+    public List<Classroom> getRecommandation(Long minCapacity, List<Equipment> requiredEquipment, List<Seance> seances, String reservationDate) {
         List<Classroom> allClassrooms = classroomClient.getAllClassrooms();
-        if(minCapacity!=null){allClassrooms = allClassrooms.stream()
+        if(minCapacity!=null){
+            System.out.println("testing capacity");allClassrooms = allClassrooms.stream()
                 .filter(classroom -> classroom.getCapacity() >= minCapacity).collect(Collectors.toList());}
-        if(requiredEquipment !=null ){allClassrooms=allClassrooms.stream().filter(classroom -> classroom.getEquipments().containsAll(requiredEquipment))
+        if(requiredEquipment !=null ){System.out.println("testing equipments");
+            allClassrooms=allClassrooms.stream().filter(classroom -> classroom.getEquipments().containsAll(requiredEquipment))
                 .collect(Collectors.toList());}
-        if (reservationDate != null) {
+        System.out.println(reservationDate);
+        System.out.println(reservationDate!=null);
+        if (reservationDate != null) { System.out.println("testing date");
             allClassrooms = allClassrooms.stream()
                     .filter(classroom -> isAvailableOnDate(classroom, reservationDate))
                     .collect(Collectors.toList());
         }
+        if(seances!=null){   allClassrooms = allClassrooms.stream()
+                .filter(classroom -> isAvailableOnSession(classroom, seances,reservationDate))
+                .collect(Collectors.toList());
+
+        }
 
      return allClassrooms;
     }
-    private boolean isAvailableOnDate(Classroom classroom, Date reservationDate) {
+    private boolean isAvailableOnDate(Classroom classroom, String reservationDateStr) {
+        // Convert the reservationDate string to a Date object
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date reservationDate = null;
+        try {
+            reservationDate = dateFormat.parse(reservationDateStr);
+        } catch (ParseException e) {
+            e.printStackTrace(); // Handle parsing exception as needed
+            return false; // Return false if parsing fails
+        }
+        System.out.println(reservationDate);
+
         List<Reservation> reservationsForClassroom = reservationRepository.findByClassIdAndReservationDate(classroom.getClassroomId(), reservationDate);
 
         if (reservationsForClassroom.isEmpty()) {
+            System.out.println("No reservation for  "+ classroom.getClassroomId());
             return true;
         }
         Set<Seance> reservedSessions = new HashSet<>();
@@ -107,8 +129,46 @@ public class ReservationServiceImpl implements ReservationService{
         // Collect all reserved sessions
         for (Reservation reservation : reservationsForClassroom) {
             reservedSessions.addAll(reservation.getSeances());
+            System.out.println(reservation.getReservationDate());
         }
+
+        System.out.println("Reserved sessions for classroom " + classroom.getClassroomId() + " on " + reservationDate + ": " + reservedSessions);
+        System.out.println(reservedSessions.size() < Seance.values().length);
 
         // Check if all sessions are reserved
         return reservedSessions.size() < Seance.values().length;
+}
+private boolean isAvailableOnSession(Classroom classroom,List<Seance> seances,String reservationDateStr){
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    Date reservationDate = null;
+    try {
+        reservationDate = dateFormat.parse(reservationDateStr);
+    } catch (ParseException e) {
+        e.printStackTrace(); // Handle parsing exception as needed
+        return false; // Return false if parsing fails
+    }
+    System.out.println(reservationDate);
+
+    List<Reservation> reservationsForClassroom = reservationRepository.findByClassIdAndReservationDate(classroom.getClassroomId(), reservationDate);
+
+    if (reservationsForClassroom.isEmpty()) {
+        System.out.println("sessions available classroom "+ classroom.getClassroomId());
+        return true;
+    }
+    Set<Seance> reservedSessions = new HashSet<>();
+
+    // Collect all reserved sessions
+    for (Reservation reservation : reservationsForClassroom) {
+        reservedSessions.addAll(reservation.getSeances());
+    } for (Seance seance : seances) {
+        if (reservedSessions.contains(seance)) {
+            System.out.println("Seance " + seance + " already reserved for classroom " + classroom.getClassroomId() + " on " + reservationDate);
+            return false;
+        }
+    }
+
+
+    System.out.println("All provided seances are available for classroom " + classroom.getClassroomId() + " on " + reservationDate);
+    return true;
+
 }}
