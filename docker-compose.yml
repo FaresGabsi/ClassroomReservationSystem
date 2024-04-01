@@ -1,0 +1,112 @@
+---
+version: '3'
+services:
+  classroom-mysql:
+    image: mysql:latest
+    container_name: classroom-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: classroom-service
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+    ports:
+        - "3306:3306"
+    volumes:
+      - ./classroom-mysql:/var/lib/mysql
+    restart: unless-stopped
+  reservation-mysql:
+    image: mysql:latest
+    container_name: reservation-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: reservation-service
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./reservation-mysql:/var/lib/mysql
+    restart: unless-stopped
+  identity-mysql:
+    image: mysql:latest
+    container_name: identity-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: user-service
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ""
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./identity-mysql:/var/lib/mysql
+    restart: unless-stopped
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  ## Eureka Service
+  service-registry:
+    image: faresgabsi/service-registry:latest
+    container_name: service-registry
+    ports:
+      - "8761:8761"
+    environment:
+        - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+        - zipkin
+
+  ## Gateway Service
+  api-gateway:
+    image: faresgabsi/api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    environment:
+        - SPRING_PROFILES_ACTIVE=dev
+    depends_on:
+        - service-registry
+        - zipkin
+  classroom-service:
+    container_name: classroom-service
+    image: faresgabsi/classroom-service:latest
+    pull_policy: always
+    environment:
+        - SPRING_PROFILES_ACTIVE=docker
+        - SPRING_DATASOURCE_URL=jdbc:mysql://classroom-mysql:3306/classroom-service
+    depends_on:
+        - service-registry
+        - api-gateway
+        - classroom-mysql
+  reservation-service:
+    container_name: classroom-service
+    image: faresgabsi/reservation-service:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://reservation-mysql:3306/reservation-service
+    depends_on:
+      - service-registry
+      - api-gateway
+      - reservation-mysql
+  identity-service:
+    container_name: identity-service
+    image: faresgabsi/identity-service:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://identity-mysql:3306/user-service
+    depends_on:
+      - service-registry
+      - api-gateway
+      - identity-mysql
+  config-server:
+    container_name: config-server
+    image: faresgabsi/config-server:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+
+
