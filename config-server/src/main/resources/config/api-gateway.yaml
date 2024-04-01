@@ -24,8 +24,14 @@ spring:
           uri: lb://identity-service
           predicates:
             - Path=/auth/**
-
+#Actuator prometheus endpoint
 management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
   tracing:
     sampling:
       probability: 1.0
+secrets:
+  jwt: 5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437

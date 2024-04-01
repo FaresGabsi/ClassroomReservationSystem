@@ -6,7 +6,12 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
+#Actuator prometheus endpoint
 management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
   tracing:
     sampling:
       probability: 1.0

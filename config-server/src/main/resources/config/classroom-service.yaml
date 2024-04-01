@@ -6,10 +6,15 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
+#Actuator prometheus endpoint
 management:
-    tracing:
-        sampling:
-          probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  tracing:
+    sampling:
+      probability: 1.0
 spring:
     datasource:
       driver-class-name: com.mysql.cj.jdbc.Driver
