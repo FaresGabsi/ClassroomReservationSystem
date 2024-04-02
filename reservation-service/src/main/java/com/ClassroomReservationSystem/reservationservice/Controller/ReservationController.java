@@ -1,5 +1,6 @@
 package com.ClassroomReservationSystem.reservationservice.Controller;
 
+import com.ClassroomReservationSystem.reservationservice.Dto.SeanceDateDTO;
 import com.ClassroomReservationSystem.reservationservice.Entity.Reservation;
 import com.ClassroomReservationSystem.reservationservice.Entity.Seance;
 import com.ClassroomReservationSystem.reservationservice.Feign.Classroom;
@@ -8,10 +9,13 @@ import com.ClassroomReservationSystem.reservationservice.Services.ReservationSer
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -25,15 +29,32 @@ public class ReservationController {
         List<Reservation> reservations= reservationService.getAllReservations();
         return ResponseEntity.ok(reservations);
     }
-    @GetMapping("/recommendation")
-    public ResponseEntity<List<Classroom>> getRecommendation(
+    @PostMapping( "/recommandation")
+    public ResponseEntity<List<Classroom>> getRecommandation(@RequestBody(required = false) SeanceDateDTO seanceDateDTO,
             @RequestParam(required = false) Long minCapacity,
             @RequestParam(required = false) List<Equipment> requiredEquipment,
-            @RequestParam(required = false)List<Seance> seances,@RequestParam(required = false) Date date) {
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date reservationDate) {
 
-        List<Classroom> recommendation = reservationService.getRecommendation(minCapacity, requiredEquipment, seances,date);
-        return new ResponseEntity<>(recommendation, HttpStatus.OK);
+        List<Seance> seances = null;
+        String formattedDate = null;
+
+        if (seanceDateDTO != null) {
+            seances = seanceDateDTO.getSeances();
+            Date dtoReservationDate = seanceDateDTO.getReservationDate();
+            formattedDate = dtoReservationDate != null ? formatDate(dtoReservationDate) : null;
+        } else if (reservationDate != null) {
+            formattedDate = formatDate(reservationDate);
+        }
+
+        List<Classroom> recommandation = reservationService.getRecommandation(minCapacity, requiredEquipment, seances, formattedDate);
+        return new ResponseEntity<>(recommandation, HttpStatus.OK);
     }
+
+    private String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(date);
+    }
+
     @PostMapping
     public ResponseEntity<String> addReservation(@RequestBody Reservation reservation){
         try {
